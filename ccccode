@@ -1,0 +1,253 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib> 
+#include <string>
+#include <algorithm>
+using namespace std;
+ofstream inFile;   //shuru
+int main(){
+	string keyword[32]={"auto","break","case","char","const","continue","default","do",
+		"double","else","enum","extern","float","for","goto","if",
+		"int","long","register","return","short","signed","sizeof","stastic",
+		"struct","switch","typedef","union","unsigned","void","volatile","while"};
+	ifstream inFile;//	ifstream outFile;
+	string thepath;
+	int n;
+	int keylength,namelength,keysearch=0,totalcount=0,j=0,keysearch1=0,l,m=0,keysearch2=0;
+	cout<<"please write the path of the code file: ";
+	cin>> thepath;
+	cout<<"the completion level: ";
+	cin>>n;
+	if(n!=1&&n!=2&&n!=3&&n!=4){
+		while(n!=1&&n!=2&&n!=3&&n!=4){
+			cout<<"error,please write the right level: ";
+			cin>>n;
+		}
+	}
+	int c=0;
+	c++;
+	while(c<n+1){
+		if(c==1){
+			string name;
+			inFile.open(thepath.c_str(),ios::in);
+			while(getline(inFile,name)){
+				namelength=name.length();
+				for(int i=0;i<32;i++){
+					keylength=keyword[i].length();
+					for(int k=0;k<namelength-keylength+1;k++){
+						for(j=0;j<keylength;j++){
+							if(name[k+j]==keyword[i][j]){
+								keysearch++;
+							}
+						}
+						if(i==7 && name[k+j+1]==keyword[8][3]){// because keyword "double" contain "do", so it need to determine whether it is  “do” or “double”.
+						}else{
+							if(keysearch==keylength){
+								totalcount++;
+							}
+						}
+						keysearch=0;
+					}
+				}	
+				//cout<<totalcount<<endl;
+			}
+			cout<<"total num "<<totalcount<<endl;
+			inFile.close();
+			//inFile.open(thepath.c_str(),ios::in);
+		}else if(c==2){
+			//2
+			int switchnum=0,buflength,case1=0,casenum[99];
+			string buf;
+			inFile.open(thepath.c_str(),ios::in);
+			while (getline(inFile, buf)){
+				//cout << buf << endl;
+				buflength=buf.length();
+				for(int i=0;i<buflength;i++){
+					for(j=0;j<5;j++){
+						if(buf[i+j]==keyword[25][j]){
+							keysearch2++;
+						}
+					}
+					if(keysearch2==5){
+						switchnum++;
+						//cout << switchnum << endl;
+						int pos=buf.find("}");
+						//cout << pos << endl;
+						while(pos == -1){
+							for(int k=0;k<buflength;k++){
+								for(l=0;l<4;l++){
+									if(buf[k+l]==keyword[2][l]){
+										keysearch1++;
+									}
+								}
+								if(keysearch1==4){
+									case1++;
+								}
+								keysearch1=0;
+							}
+							getline(inFile, buf);
+							buflength=buf.length();
+							//cout << buf << endl;
+							pos=buf.find("}");
+						}
+						casenum[m]=case1;
+						m=m+1;
+					}
+					keysearch2=0;
+					case1=0;
+				}
+				
+			}
+			cout<<"switch num: "<<switchnum<<endl;
+			cout<<"case num: ";
+			for(int i=0;i<m;i++){
+				cout<<casenum[i]<<" "; 
+			}
+			//关闭文件
+			inFile.close();
+		}else if(c==3){
+			cout<<endl;
+			string third;
+			int pos2,pos1,pos3,pos4,pos5,pos6,ifelsenum=0;
+			inFile.open(thepath.c_str(),ios::in);
+			while(getline(inFile,third)){
+				pos1=third.find("if");
+				pos2=third.find("else");
+				//pos3=third.find("{");
+				//pos4=third.find("}");
+				pos5=third.find("else if");
+				//pos6=third.find("{}");
+				//cout<<third<<endl;
+				if(pos1 != -1 && pos5 == -1){
+					//cout<<third<<endl;
+					
+					getline(inFile,third);
+					pos2=third.find("else");
+					pos5=third.find("else if");
+					pos1=third.find("if");
+					//cout<<third<<endl;
+					if(pos1 != -1 && pos5 == -1){//if之后如果又出现一个if
+						while(pos2 == -1 && pos5 == -1){
+							getline(inFile,third);
+							//cout<<third<<endl;
+							pos1=third.find("if");
+							pos2=third.find("else");
+							pos5=third.find("else if");
+							if(pos2 !=-1 && pos5==-1){
+								ifelsenum++;
+							}
+							
+						}
+					}else{
+						if(pos2 != -1 && pos5 == -1){
+							ifelsenum++;
+						}
+					}
+					
+				}
+			}
+			
+			cout<<"if-else num: "<<ifelsenum<<endl;
+			inFile.close();
+			
+		}else if(c==4){
+			//4
+			
+			string forth;
+			int p2,p1,p3,p4,p5,p6,ifelseifelsenum=0,elnum=0,elinum=0;
+			inFile.open(thepath.c_str(),ios::in);
+			while(getline(inFile,forth)){
+				p1=forth.find("if");
+				p2=forth.find("else");
+				//p3=forth.find("{");
+				//p4=forth.find("}");
+				p5=forth.find("else if");
+				//p6=forth.find("{}");
+				if(p1 != -1 && p5 == -1){
+					//cout<<forth<<endl;
+					
+					getline(inFile,forth);
+					p1=forth.find("if");
+					p2=forth.find("else");
+					p5=forth.find("else if");
+					if(p1 != -1 && p5 == -1){//if之后如果又出现一个if
+						while(p2 == -1 && p5 == -1){
+							getline(inFile,forth);
+							//cout<<forth<<endl;
+							p1=forth.find("if");
+							p2=forth.find("else");
+							p5=forth.find("else if");
+							if(p2 !=-1 && p5==-1){
+								elnum=1;
+							}
+							if(p5 != -1){
+								elinum=1;
+							}
+						}
+						if(elinum==1){
+							ifelseifelsenum++;
+							elnum=0;
+							elinum=0;
+						}else{
+							getline(inFile,forth);
+							//cout<<forth<<endl;
+							p1=forth.find("if");
+							p2=forth.find("else");
+							p5=forth.find("else if");
+							if(p2 ==-1 && p5 == -1){
+								while(p2 ==-1 && p5 == -1){
+									getline(inFile,forth);
+									//cout<<forth<<endl;
+									p1=forth.find("if");
+									p2=forth.find("else");
+									p5=forth.find("else if");
+								}
+							}
+							if(p5 != -1){
+								ifelseifelsenum++;
+							}
+							elnum=0;
+							elinum=0;
+							continue;
+						}
+						elnum=0;
+						elinum=0;
+					}else{
+						if(p5 != -1){
+							ifelseifelsenum++;
+						}
+					}
+					//cout<<forth<<endl;
+					
+				}
+			}
+			
+			cout<<"if-elseif-else num: "<<ifelseifelsenum<<endl;
+			inFile.close();
+		}
+		c++;
+	}
+	
+	
+	
+	
+	//inFile.open(thepath.c_str(),ios::in);
+	/*
+		if (!inFile.is_open()) {
+		cout << "文件打开失败,请重新尝试。" << endl;
+		//return 0;
+	}
+	*/
+	
+	
+	
+	
+
+
+	
+}
+	
+	
+	
+	
+	
